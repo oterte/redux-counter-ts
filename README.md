@@ -1,46 +1,56 @@
-# Getting Started with Create React App
+# Redux
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# 리덕스란?
+자바스크립트 애플리케이션을 위한 상태 관리 라이브러리
 
-## Available Scripts
+### Props vs state
+1. props
+- properties의 줄임말
+- Props는 구성 요소가 서로 통신하는 방법
+- props는 상위 구성 요소에서 아래쪽으로 흐른다
+- 해당 값을 변경하려면 자식 관점에선 props를 변경할 수 있으며, 부모는 내부 상태를 변경해야 함. -> 부모 컴포넌트의 state를 변경해주어야 함
 
-In the project directory, you can run:
+2. state
+- 부모 컴포넌트에서 자식 컴포넌트에서 데이터를 보내는게 아닌 하나의 컴포넌트 안에서 데이터를 전달하려면 state로 해야함
+- state는 조작 할 수 있다 -> props는 props자체를 변경할 수 없지만 state는 state 자체를 변경할 수 있다.
+- state가 변하면 리렌더링이 된다.
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## 그래서 redux가 뭔데?
+Flux를 구현해놓은 구현체라고 생각하면 될 것 같다.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
 
-### `npm test`
+1. Redux는 State를 관리하는 것.
+- Store라는 저장소에 데이터를 넣어두고, 필요한 곳에서 store의 데이터를 가져다 쓸 수 있다.
+- 필요에 따라 컴포넌트에서 그 store의 데이터를 업데이트 할 수도 있다.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+### Action? Payload? Store? Reducer? Provider?
+1. Action
+- Action은 간단한 javascript 객체
+- 우리가 수행하는 작업의 유형을 지정하는 type 속성이 있으며 선택적으로 redux 저장소에 일부 데이터를 보내는데 사용되는 payload 속성을 가질 수 도 있음
+2. Reducer 
+- 애플리케이션 상태의 변경 사항을 결정하고 업데이트된 상태를 반환하는 함수
+- 인수로 조치를 취하고 store 내부의 상태를 업데이트 한다.
+- Reducer는 순수함수이며, 내부에서 순수함수가 아닌 것들을 사용하면 안된다.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+3. Store
+- 리듀서와 액션을 하나로 모으는 객체 저장소로, 애플리케이션의 전체 상태 트리를 보유
+- 내부 상태를 변경하는 유일한 방법은 해당 상태에 대한 Action을 전달하는 것
+- 클래스가 아님. 메소드가 있는 객체일 뿐.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+4. Provider
+- <Provider> 구성 요소는 Redux store 저장소에 엑세스해야 하는 모든 중첩 구성 요소에서 Redux Store 저장소를 사용할 수 있도록 한다.
+- React Redux 앱의 모든 React 구성 요소는 저장소에 연결할 수 있으므로 대부분의 응용 프로그램은 전체 앱의 구성요소 트리가 내부에 있는 최상위 수준에서 <Provider>를 렌더링 한다
+- 그 다음 Hooks 및 연결 API는 React의 컨텍스트 메커니즘을 통해 제겅된 저장소 인스턴스에 엑세스할 수 있다.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### 미들웨어
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+1. 미들웨어란?
+리덕스에서 dispatch를 하면 action이 리듀서로 전달되고, 리듀서는 새로운 state를 반환<br>
+그런데 미들웨어를 사용하면 이 과정 사이에 우리가 하고싶은 작업들을 넣어서 할 수 있다.<br>
+만약 counter 앱에 더하기 버튼을 클릭했을때, 바로 1을 더하지 않고 3초를 기다렸다가 +1이 되도록 구현하려면 미들웨어를 사용하지 않고서는 구현할 수 없다.<br>
+<!-- -> 리듀서는 순수함수기 때문에 안에서 콜백을 사용하면 안되니까? -->
+왜냐면 dispatch가 되자마자 바로 action이 리듀서로 달려가서 새로운 state를 반환해버리기 때문
