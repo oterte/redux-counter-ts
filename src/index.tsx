@@ -3,21 +3,29 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { createStore } from 'redux';
+import { applyMiddleware, createStore } from 'redux';
 import counter from './reducers';
 import rootReducer from './reducers';
 import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
 
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
-const store = createStore(rootReducer)
-store.dispatch({
-  type:"ADD_TODO",
-  text:"USE REDUX"
-})
-console.log('getState', store.getState())
+
+// 로깅 미들웨어 생성
+// 리덕스를 사용할 때 로그가 찍히게 된다.
+const loggerMiddleware = (store:any) => (next:any) => (action:any) => {
+  console.log("store", store)
+  console.log("action", action)
+  next(action)
+}
+// 미들웨어 등록
+const middleWare = applyMiddleware(thunk, loggerMiddleware)
+// 미들웨어 등록하기
+const store = createStore(rootReducer, middleWare)
+
 const render = () => root.render(
   <Provider store={store}>
     <App
